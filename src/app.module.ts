@@ -17,9 +17,9 @@ import { ConfigModule } from '@nestjs/config';
       type: 'postgres',
       host: 'ec2-44-199-22-207.compute-1.amazonaws.com',
       port: 5432,
-      username: 'ooagwhzggqsscx',
-      password: '1bc377b7d6e1dcff349982c81b1e681e59351503dbc0a5ff27c9aeac2fdbab45',
-      database: 'd1hif7lgg4ur1o',
+      username:  "ziqsjefxsakxsc",
+      password: "f107c840c8126df8540459d80eb9a2fc212224bda3a06be42cfbf403656e6503",
+      database: "d49sjm30ojmjj5",
       entities: [Coffee, Flavor, UserEntity],
       synchronize: true,
       ssl: false
