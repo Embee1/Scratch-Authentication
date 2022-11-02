@@ -22,7 +22,7 @@ import { ConfigModule } from '@nestjs/config';
       database: "d49sjm30ojmjj5",
       entities: [Coffee, Flavor, UserEntity],
       synchronize: true,
-      ssl: false
+      ssl: true
     }),
 
     ConfigModule.forRoot(),
