@@ -14,12 +14,12 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [CoffeesModule,
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: 'localhost',
-      port: 3307,
-      username: 'root',
-      password: '',
-      database: 'scratch',
+      type: 'postgres',
+      host: 'ec2-44-199-22-207.compute-1.amazonaws.com',
+      port: 5432,
+      username: 'ooagwhzggqsscx',
+      password: '1bc377b7d6e1dcff349982c81b1e681e59351503dbc0a5ff27c9aeac2fdbab45',
+      database: 'd1hif7lgg4ur1o',
       entities: [Coffee, Flavor, UserEntity],
       synchronize: true,
     }),
