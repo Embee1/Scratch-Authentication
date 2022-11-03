@@ -17,7 +17,7 @@ export class UserController {
   @Post()
   create(@Body() user: User):Observable<User | object>{
     return this.userService.create(user).pipe(
-      map((user: User) => user),
+      map((user: User, ) => user),
         catchError(err => of({error: err.message}))
       )
     

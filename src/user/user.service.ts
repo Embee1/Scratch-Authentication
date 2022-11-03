@@ -16,7 +16,7 @@ export class UserService {
 
   //Create/register user
  create(user: User): Observable<User>{
-   return this.authService.hashedPassword(user.password).pipe(
+   return this.authService.hashedPassword(user.password,).pipe(
     switchMap((passwordHash: string) => {
       const newUser = new UserEntity();
       newUser.name = user.name;
@@ -24,16 +24,29 @@ export class UserService {
       newUser.email = user.email;
       newUser.password = passwordHash;
 
-      return from(this.userRepository.save(newUser)).pipe(
+      return from(this.userRepository.save(newUser)).pipe( 
         map((user: User) =>{
-        
-          return user;
-        }),
+          const {password, ...result} = user
+          return result;
+          }),
         catchError(err => throwError(err))
-      )
+      ) 
     })
-   )
-  }
+     )
+   }
+
+//log user in
+login(user: User):Observable<string>{
+  return this.validateUser(user.email, user.password).pipe(
+    switchMap((user :User) =>{
+      if(user){
+        return this.authService.generateJWT(user).pipe(map((jwt:string) => jwt))
+      }else{
+        return 'wrong credentials'
+      }
+    })
+  )
+}
 
 
   //find a single user
@@ -69,19 +82,6 @@ map((user: User) => {
   //delete user
   deleteOne(id: number): Observable<any>{
     return from(this.userRepository.delete(id));
-      }
-
-//log user in
-      login(user: User):Observable<string>{
-        return this.validateUser(user.email, user.password).pipe(
-          switchMap((user :User) =>{
-            if(user){
-              return this.authService.generateJWT(user).pipe(map((jwt:string) => jwt))
-            }else{
-              return 'wrong credentials'
-            }
-          })
-        )
       }
 
 
