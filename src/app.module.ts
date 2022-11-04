@@ -11,6 +11,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 
 
+
 @Module({
   imports: [CoffeesModule,
     TypeOrmModule.forRoot({
@@ -21,6 +22,7 @@ import { ConfigModule } from '@nestjs/config';
       // username:  "ziqsjefxsakxsc",
       // password: "f107c840c8126df8540459d80eb9a2fc212224bda3a06be42cfbf403656e6503",
       // database: "d49sjm30ojmjj5",
+   
        entities: [Coffee, Flavor, UserEntity],
       synchronize: true,
       

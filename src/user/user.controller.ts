@@ -1,14 +1,12 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, UseGuards, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User, UserRole } from './user.interface';
-
 import { map, catchError } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { hasRoles } from 'src/auth/decorator/roles.decorator';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guards';
-import { UserEntity } from './user.entity';
 import { RolesGuard } from 'src/auth/roles.guard';
-// import { RolesGuard } from 'src/auth/roles.guard';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('user')
 export class UserController {
@@ -21,9 +19,7 @@ export class UserController {
       map((user: User, ) => user),
         catchError(err => of({error: err.message}))
       )
-    
   }
-
 
   //log user in
   @Post('login')
@@ -33,23 +29,22 @@ export class UserController {
         return {access_token: jwt};
       })
     )}
-
-  // @Post()
-  // create(@Body() user: User):Observable<User>{
-  //   return this.userService.create(user)
-  // }
-
+    
 
   @Get(':id')
   findOne(@Param() params): Observable<User>{
     return this.userService.findOne(params.id)
   } 
 
- @hasRoles(UserRole.ADMIN)
-   @UseGuards(JwtAuthGuard, RolesGuard)
+@hasRoles(UserRole.ADMIN)
+@UseGuards(JwtAuthGuard, RolesGuard)
   @Get()
-  findAll():Observable<User[]>{
-    return this.userService.findAll()
+  index(
+    @Query('page') page: number =1,
+    @Query('limit') limit: number = 10,
+  ):Observable<Pagination<User>>{
+limit = limit > 100 ? 100 : limit
+return this.userService.paginate({page, limit:limit, route: 'http://localhost:3000/users'}); 
   }
 
   @Delete(':id')
@@ -58,7 +53,7 @@ export class UserController {
   }
 
   @Put(':id')
-updateOne(@Param('id') id: number, @Body()user: User ):Observable<User>{
+  updateOne(@Param('id') id: number, @Body()user: User ):Observable<User>{
   return this.userService.updateOne(Number(id), user)
 }
 
@@ -69,4 +64,10 @@ updateRoleOfUser(@Param('id') id: string, @Body() user: User): Observable<User>{
   return this.userService.updateRoleOfUser(Number(id), user);
 }
   
+
+
+  // @Post()
+  // create(@Body() user: User):Observable<User>{
+  //   return this.userService.create(user)
+  // }
 }
