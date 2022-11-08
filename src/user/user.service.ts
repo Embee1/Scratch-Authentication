@@ -1,14 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { from,throwError, Observable,} from 'rxjs';
 import { AuthService } from 'src/auth/auth.service';
-import { Repository } from 'typeorm';
-// import { User } from './entities/user.entity';
+import { Like, Repository } from 'typeorm';
 import { UserEntity } from './user.entity';
 import { User, UserRole } from './user.interface';
 import { switchMap, map, catchError } from 'rxjs/operators';
-import{paginate, Pagination, IPaginationOptions} from 'nestjs-typeorm-paginate';
-
+import{paginate, Pagination, IPaginationOptions, } from 'nestjs-typeorm-paginate';
 
 @Injectable()
 export class UserService {
@@ -18,9 +16,9 @@ export class UserService {
 
   //Create/register user
  create(user: User): Observable<User>{
-   return this.authService.hashedPassword(user.password,).pipe(
+   return this.authService.hashedPassword(user.password).pipe(
     switchMap((passwordHash: string) => {
-      const newUser = new UserEntity();
+    const newUser = new UserEntity();
       newUser.name = user.name;
       newUser.username = user.username;
       newUser.email = user.email;
@@ -28,15 +26,14 @@ export class UserService {
       newUser.role = UserRole.USER;
 
       return from(this.userRepository.save(newUser)).pipe( 
-        map((user: User) =>{
+        map((user: User) => {
           const {password, ...result} = user
           return result;
           }),
         catchError(err => throwError(err))
       ) 
     }),
-     )
-   }
+     )}
 
 //log user in
 login(user: User):Observable<string>{
@@ -48,19 +45,16 @@ login(user: User):Observable<string>{
         return 'wrong credentials';
       }
     })
-  )
-}
+  )}
 
   //find a single user
   findOne(id: number):Observable<User>{
     return from(this.userRepository.findOneBy({id})).pipe(
-map((user: User) => {
+  map((user: User) => {
   const{password, ...result} = user;
   return result;
 })
-    )
-  }
-
+)}
 
   //find all users
   findAll(): Observable<User[]>{
@@ -71,7 +65,7 @@ map((user: User) => {
       })
     );
   }
-
+  
 paginate(options: IPaginationOptions): Observable<Pagination<User>>{
   return from(paginate<User>(this.userRepository, options)).pipe(
     map((usersPageable: Pagination<User>) => {
@@ -79,15 +73,49 @@ paginate(options: IPaginationOptions): Observable<Pagination<User>>{
       return usersPageable;
 
     })
-  )
-}
+  )}
+
+  
+//   paginateFilterByUsername(options: IPaginationOptions, user:User,):Observable<Pagination<User>>{
+
+//     return from(this.userRepository.findAndCount({
+//       skip: options.page * options.limit || 0,
+//       take: options.limit || 10,
+//       order: {id: "ASC"},
+//       select:['id', 'name', 'username', 'email', 'role'],
+      
+//       where:[
+//         {username: Like(`%${user.username}%`)}
+//       ]
+//       })).pipe(
+//       map(([users, totalUsers]) => {
+//         const usersPageable: Pagination<User> = {
+//           items: users,
+//           links: {
+//             first: options.route + `?limit=${options.limit}`,
+//             previous: options.route + ``,
+//             next: options.route + `?limit=${options.limit}&page=${options.page}`,
+//             last: options.route + `?limit=${options.limit}&page=${totalUsers / options.page}`,
+//           },
+//           meta: {
+//             currentPage: options.page,
+//             itemCount: users.length,
+//             itemsPerPage:options.limit,
+//             totalItems: totalUsers,
+//             totalPages: Math.ceil(totalUsers / options.limit)
+//           }
+//         }
+//     return usersPageable;
+// })
+//     )}
+
 
 updateOne(id: number, user: User): Observable<any>{
     delete user.email;
     delete user.password;
-    delete  user.role; 
-
-    return from (this.userRepository.update(id, user));
+    delete user.role; 
+  return from(this.userRepository.update(id, user 
+    ));
   }
 
   //delete user
@@ -95,12 +123,11 @@ updateOne(id: number, user: User): Observable<any>{
     return from(this.userRepository.delete(id));
       }
 
-
-      //validate user with email and password
+  //validate user with email and password
       validateUser(email: string, password: string):Observable<User>{
 return this.findByMail(email).pipe(
   switchMap((user: User) => this.authService.comparePasswords(password, user.password).pipe(
-    map((match: boolean) =>{
+    map((match: boolean) => {
       if(match){
         const {password, ...result} = user;
         return result
@@ -109,12 +136,10 @@ return this.findByMail(email).pipe(
       }
     })
   ))
-)
-      }
-
+)}
 
       //validate with email
-      findByMail(email: string):Observable<User>{
+  findByMail(email: string):Observable<User>{
         return from (this.userRepository.findOneBy({email}));
       }
 

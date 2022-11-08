@@ -9,11 +9,14 @@ import { UserModule } from './user/user.module';
 import { UserEntity } from './user/user.entity';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
+import { MulterModule } from '@nestjs/platform-express';
 
 
 
 @Module({
   imports: [CoffeesModule,
+
+    MulterModule.register({dest: './uploads'}),
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: "postgres://hng-scratch-demo-main-db-04ed0799d5a709abf:zvGXww7z28yBN65ycskkdhzMhamaPd@user-prod-us-east-2-1.cluster-cfi5vnucvv3w.us-east-2.rds.amazonaws.com:5432/hng-scratch-demo-main-db-04ed0799d5a709abf",
@@ -26,14 +29,13 @@ import { ConfigModule } from '@nestjs/config';
        entities: [Coffee, Flavor, UserEntity],
       synchronize: true,
       
-    }),
+}),
 
-    ConfigModule.forRoot(),
+ ConfigModule.forRoot(),
   TypeOrmModule.forFeature([Coffee, Flavor, UserEntity]),
   UserModule,
   AuthModule,
-  
-    ],
+  ],
     
   controllers: [AppController],
   providers: [AppService],

@@ -28,7 +28,7 @@ let hasPermission: boolean = false;
 
 if(hasRole()) {
    hasPermission = true;
-};
+}
         return user && hasPermission;
     } )
 )

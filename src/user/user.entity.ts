@@ -1,7 +1,5 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import { UserRole } from "./user.interface";
-
-
 @Entity()
 export class UserEntity{
 @PrimaryGeneratedColumn()
@@ -9,7 +7,6 @@ id: number;
 
 @Column()
 name: string
-
 
 @Column({unique: true})
 username: string;
@@ -25,8 +22,6 @@ role: UserRole;
 
 @BeforeInsert()
 emailToLowerCase(){
-    this.email = this.email.toLowerCase();
+this.email = this.email.toLowerCase();
 }
-
-
 }
